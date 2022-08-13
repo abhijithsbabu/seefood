@@ -1,16 +1,15 @@
-# see_food
+# See Food
+### Overview:
+This project is inspired by HBO's Silicon Valley [SeeFood](https://silicon-valley.fandom.com/wiki/SeeFood) application by Jian Yang. In this application we are taking the image of the food from the user and then we are using a model, which is trained to recognize 101 food dishes, to get the prediction. Then based on the result we are fetching its nutritious value. The nutritious values shown by this application are not based on any medical research and can be wrong, so it is advised to not use these values for any medical purpose. This application is made soley for the purpose of learning and not for any public use.
 
-A new Flutter project.
+### Dataset Used:
+The dataset used to train the model is [Food101](https://www.tensorflow.org/datasets/catalog/food101). This dataset consists of 101 food categories, with 101000 images. For each class, 250 manually reviewed test images are provided as well as 750 training images. All images were rescaled to have a maximum side length of 512 pixels.
+- **Classes (Categories):** 101 different classes
+- **Download Size:** 5GB
 
-## Getting Started
+### Model Architecture:
+The architecture of the model is based on [MobileNetV3](https://arxiv.org/abs/1905.02244v5).
+- **Input:** This model takes images as input. Inputs are expected to be 3-channel RGB color images of size 224 x 224, scaled to [0, 1].
+- **Output:** A probability vector of dimension 101, corresponding to 101 food dishes in the labelmap.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Application UI Design:
