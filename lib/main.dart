@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
+import 'package:see_food/info.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -133,9 +134,19 @@ class DisplayPictureScreen extends StatelessWidget {
             ElevatedButton(
                 onPressed: () async {
                   String url;
+                  List<String> nutri;
                   url = await extractData(_food);
                   print(url);
-                  extractNutrient(url);
+                  nutri = await extractNutrient(url);
+                  print(nutri);
+                  nutri.length != 0
+                      // ignore: use_build_context_synchronously
+                      ? Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  Infopage(nutri: customizelist(nutri))))
+                      : print("Not found");
                 },
                 child: Text("Search"))
           ],
@@ -143,6 +154,21 @@ class DisplayPictureScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+customizelist(List<String> nutri) {
+  nutri.removeLast();
+  List<String> temp = [];
+  List<List<String>> final_nutri = [];
+  for (int i = 0; i < nutri.length; i++) {
+    if (nutri[i] != '') {
+      temp.add(nutri[i].trim());
+      if (temp != []) {}
+      final_nutri.add(temp);
+    }
+    temp = [];
+  }
+  return final_nutri;
 }
 
 Future<String> extractData(String _food) async {
@@ -174,7 +200,7 @@ Future<String> extractData(String _food) async {
   }
 }
 
-Future<String> extractNutrient(String _url) async {
+Future<List<String>> extractNutrient(String _url) async {
 //Getting the response from the targeted url
   final response_final = await http.Client()
       .get(Uri.parse('https://www.nutritionvalue.org' + _url));
@@ -193,12 +219,12 @@ Future<String> extractNutrient(String _url) async {
           .children
           .map((e) => e.text.trim())
           .toList();
-      print(responseString_final.toString());
-      return responseString_final.toString();
+
+      return responseString_final;
     } catch (e) {
-      return 'err';
+      return ['err'];
     }
   } else {
-    return '${response_final.statusCode}';
+    return ['${response_final.statusCode}'];
   }
 }
