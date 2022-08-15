@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-
+import 'package:html/parser.dart' as parser;
+import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +24,6 @@ Future<void> main() async {
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
   const TakePictureScreen({
-    super.key,
     required this.camera,
   });
 
@@ -62,7 +63,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     // appBar: AppBar(title: const Text('Take a picture')),
+      // appBar: AppBar(title: const Text('Take a picture')),
       // You must wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner until the
       // controller has finished initializing.
@@ -118,15 +119,86 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 class DisplayPictureScreen extends StatelessWidget {
   final String imagePath;
 
-  const DisplayPictureScreen({super.key, required this.imagePath});
+  const DisplayPictureScreen({required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
+    String _food = 'apple pie';
     return Scaffold(
-      appBar: AppBar(title: const Text('Display the Picture')),
-      // The image is stored as a file on the device. Use the `Image.file`
-      // constructor with the given path to display the image.
-      body: Image.file(File(imagePath)),
+      appBar: AppBar(title: const Text('Food Name')),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Image.file(File(imagePath)),
+            ElevatedButton(
+                onPressed: () async {
+                  String url;
+                  url = await extractData(_food);
+                  print(url);
+                  extractNutrient(url);
+                },
+                child: Text("Search"))
+          ],
+        ),
+      ),
     );
+  }
+}
+
+Future<String> extractData(String _food) async {
+//Getting the response from the targeted url
+  final response = await http.Client().get(Uri.parse(
+      'https://www.nutritionvalue.org/search.php?food_query=' + _food));
+  //Status Code 200 means response has been received successfully
+  if (response.statusCode == 200) {
+    //Getting the html document from the response
+    var document = parser.parse(response.body);
+    try {
+      //Scraping the first article title
+      var responseString1 = document
+          .getElementsByClassName('results')[0]
+          .children[0]
+          .children[1]
+          .children[0]
+          .getElementsByTagName('a')
+          .where((e) => e.attributes.containsKey('href'))
+          .map((e) => e.attributes['href'])
+          .toList()[0];
+      //Converting the extracted titles into string and returning a list of Strings
+      return responseString1.toString();
+    } catch (e) {
+      return 'err';
+    }
+  } else {
+    return '${response.statusCode}';
+  }
+}
+
+Future<String> extractNutrient(String _url) async {
+//Getting the response from the targeted url
+  final response_final = await http.Client()
+      .get(Uri.parse('https://www.nutritionvalue.org' + _url));
+
+  if (response_final.statusCode == 200) {
+    var document_final = parser.parse(response_final.body);
+    try {
+      //NUTRIENTS PAGE
+      var responseString_final = document_final
+          .getElementById('nutrition-label')!
+          .children[0]
+          .children[0]
+          .children[0]
+          .children[0]
+          .children[0]
+          .children
+          .map((e) => e.text.trim())
+          .toList();
+      print(responseString_final.toString());
+      return responseString_final.toString();
+    } catch (e) {
+      return 'err';
+    }
+  } else {
+    return '${response_final.statusCode}';
   }
 }
