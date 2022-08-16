@@ -6,6 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:see_food/info.dart';
+import 'package:see_food/ml.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -98,11 +99,14 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             // If the picture was taken, display it on a new screen.
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => DisplayPictureScreen(
+                /* builder: (context) => DisplayPictureScreen(
                   // Pass the automatically generated path to
                   // the DisplayPictureScreen widget.
                   imagePath: image.path,
-                ),
+                ), */
+
+                // TODO: Testing Model Classifier
+                builder: (context) => const ModelTestPage(),
               ),
             );
           } catch (e) {
@@ -141,11 +145,7 @@ class DisplayPictureScreen extends StatelessWidget {
                   print(nutri);
                   nutri.length != 0
                       // ignore: use_build_context_synchronously
-                      ? Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  Infopage(nutri: customizelist(nutri))))
+                      ? Navigator.push(context, MaterialPageRoute(builder: (context) => Infopage(nutri: customizelist(nutri))))
                       : print("Not found");
                 },
                 child: Text("Search"))
@@ -173,8 +173,7 @@ customizelist(List<String> nutri) {
 
 Future<String> extractData(String _food) async {
 //Getting the response from the targeted url
-  final response = await http.Client().get(Uri.parse(
-      'https://www.nutritionvalue.org/search.php?food_query=' + _food));
+  final response = await http.Client().get(Uri.parse('https://www.nutritionvalue.org/search.php?food_query=' + _food));
   //Status Code 200 means response has been received successfully
   if (response.statusCode == 200) {
     //Getting the html document from the response
@@ -202,8 +201,7 @@ Future<String> extractData(String _food) async {
 
 Future<List<String>> extractNutrient(String _url) async {
 //Getting the response from the targeted url
-  final response_final = await http.Client()
-      .get(Uri.parse('https://www.nutritionvalue.org' + _url));
+  final response_final = await http.Client().get(Uri.parse('https://www.nutritionvalue.org' + _url));
 
   if (response_final.statusCode == 200) {
     var document_final = parser.parse(response_final.body);
