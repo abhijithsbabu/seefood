@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.see_food">
+    <!-- Internet Connection -->
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="see_food"
         android:name="${applicationName}"
