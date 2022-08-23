@@ -77,19 +77,32 @@ class _NutrientsState extends State<Nutrients> {
   @override
   Widget build(BuildContext context) {
     final List<List<String>> finalNutri;
-    late String food;
-    if (_outputs.isEmpty) {
-      _outputs = [
-        {'confidence': 0.01, 'index': 1, 'label': ''}
-      ];
+    String food = '';
+    // if (_outputs.isEmpty) {
+    //   _outputs = [
+    //     {'confidence': 0.01, 'index': 1, 'label': ''}
+    //   ];
+    // }
+    if (_outputs.isNotEmpty) {
+      setState(() {
+        food = _outputs[0]['label'];
+      });
     }
-    setState(() {
-      food = _outputs[0]['label'];
-    });
+
     nutri.isNotEmpty ? finalNutri = customizelist(nutri) : finalNutri = [];
     print(food);
-    if (nutri.isEmpty || _outputs[0]['label'] == '' || imgurl.isEmpty) {
+    if (nutri.isEmpty || imgurl.isEmpty) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    } else if (_outputs.isEmpty) {
+      return Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+          ),
+          body: const Center(
+              child: Text(
+            'No Result',
+            style: TextStyle(fontSize: 20),
+          )));
     } else {
       return Padding(
         padding: const EdgeInsets.only(top: 20.0),
