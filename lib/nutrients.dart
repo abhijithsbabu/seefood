@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart' as http;
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:tflite/tflite.dart';
 
 class Nutrients extends StatefulWidget {
@@ -78,200 +76,207 @@ class _NutrientsState extends State<Nutrients> {
 
   @override
   Widget build(BuildContext context) {
-    final List<List<String>> final_nutri;
+    final List<List<String>> finalNutri;
+    late String food;
     if (_outputs.isEmpty) {
       _outputs = [
         {'confidence': 0.01, 'index': 1, 'label': ''}
       ];
     }
-    String _food = _outputs[0]['label'];
-    nutri.length != 0 ? final_nutri = customizelist(nutri) : final_nutri = [];
-    print(_food);
-    return Padding(
-      padding: const EdgeInsets.only(top: 20.0),
-      child: Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.white,
+    setState(() {
+      food = _outputs[0]['label'];
+    });
+    nutri.isNotEmpty ? finalNutri = customizelist(nutri) : finalNutri = [];
+    print(food);
+    if (nutri.isEmpty || _outputs[0]['label'] == '' || imgurl.isEmpty) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    } else {
+      return Padding(
+        padding: const EdgeInsets.only(top: 20.0),
+        child: Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios_new,
+                  color: Colors.white,
+                ),
+                onPressed: () => Navigator.of(context).pop(),
               ),
-              onPressed: () => Navigator.of(context).pop(),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
             ),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-          ),
-          backgroundColor: Color.fromARGB(255, 89, 148, 250),
-          body: SingleChildScrollView(
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 70.0),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(40),
-                            topLeft: Radius.circular(40)),
-                        color: Colors.white),
-                    width: MediaQuery.of(context).size.width,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 140.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Text(
-                                    _food,
-                                    style: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              Container(
-                                height: 200,
-                                color: Colors.white,
-                                child: ListView(
-                                  scrollDirection: Axis.horizontal,
+            backgroundColor: const Color.fromARGB(255, 89, 148, 250),
+            body: SingleChildScrollView(
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 70.0),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(40),
+                              topLeft: Radius.circular(40)),
+                          color: Colors.white),
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 140.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
                                   children: [
-                                    Image.network(imgurl[0].toString()),
-                                    Image.network(imgurl[1].toString())
+                                    Text(
+                                      food,
+                                      style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold),
+                                    ),
                                   ],
                                 ),
-                              ),
-                              Container(
-                                color: Color(0xfff5f5f5),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 10.0, left: 8.0, right: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                Container(
+                                  height: 200,
+                                  color: Colors.white,
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
                                     children: [
-                                      Card(
-                                        elevation: 5,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15.0),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              8, 15, 8, 15),
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                      final_nutri[1]
-                                                          .toString()
-                                                          .substring(1, 13),
-                                                      style: const TextStyle(
-                                                          fontSize: 20)),
-                                                  Text(
-                                                      final_nutri[1]
-                                                          .toString()
-                                                          .substring(
-                                                              13,
-                                                              final_nutri[1]
-                                                                      .toString()
-                                                                      .length -
-                                                                  1),
-                                                      style: const TextStyle(
-                                                          fontSize: 20)),
-                                                ],
-                                              ),
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                      final_nutri[2]
-                                                          .toString()
-                                                          .substring(1, 19),
-                                                      style: const TextStyle(
-                                                          fontSize: 20)),
-                                                  Text(
-                                                      '${final_nutri[2].toString().substring(19, final_nutri[2].toString().length - 1)} ${final_nutri[3].toString().substring(1, final_nutri[3].toString().length - 6)}',
-                                                      style: const TextStyle(
-                                                          fontSize: 20)),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      Text(
-                                        final_nutri[4].toString().substring(
-                                            1,
-                                            final_nutri[4].toString().length -
-                                                1),
-                                        style: const TextStyle(fontSize: 20),
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      print_nutris(final_nutri)
+                                      Image.network(imgurl[0].toString()),
+                                      Image.network(imgurl[1].toString())
                                     ],
                                   ),
                                 ),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 200,
-                  top: 100,
-                  child: FractionalTranslation(
-                    translation: Offset(-0.5, -0.5),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color.fromARGB(0, 227, 223, 223),
-                            blurRadius: 15.0,
-                            // spreadRadius: 10.0,
+                                Container(
+                                  color: const Color(0xfff5f5f5),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 10.0, left: 8.0, right: 8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Card(
+                                          elevation: 5,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                8, 15, 8, 15),
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                        finalNutri[1]
+                                                            .toString()
+                                                            .substring(1, 13),
+                                                        style: const TextStyle(
+                                                            fontSize: 20)),
+                                                    Text(
+                                                        finalNutri[1]
+                                                            .toString()
+                                                            .substring(
+                                                                13,
+                                                                finalNutri[1]
+                                                                        .toString()
+                                                                        .length -
+                                                                    1),
+                                                        style: const TextStyle(
+                                                            fontSize: 20)),
+                                                  ],
+                                                ),
+                                                const SizedBox(
+                                                  height: 10,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                        finalNutri[2]
+                                                            .toString()
+                                                            .substring(1, 19),
+                                                        style: const TextStyle(
+                                                            fontSize: 20)),
+                                                    Text(
+                                                        '${finalNutri[2].toString().substring(19, finalNutri[2].toString().length - 1)} ${finalNutri[3].toString().substring(1, finalNutri[3].toString().length - 6)}',
+                                                        style: const TextStyle(
+                                                            fontSize: 20)),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        Text(
+                                          finalNutri[4].toString().substring(
+                                              1,
+                                              finalNutri[4].toString().length -
+                                                  1),
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        print_nutris(finalNutri)
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
                           )
                         ],
                       ),
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  Positioned(
+                    left: 200,
+                    top: 100,
+                    child: FractionalTranslation(
+                      translation: const Offset(-0.5, -0.5),
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(0, 227, 223, 223),
+                              blurRadius: 15.0,
+                              // spreadRadius: 10.0,
+                            )
+                          ],
                         ),
-                        elevation: 10.0,
-                        child: Container(
-                          height: 180.0,
-                          width: 180.0,
-                          child: widget.img,
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          elevation: 10.0,
+                          child: SizedBox(
+                            height: 180.0,
+                            width: 180.0,
+                            child: widget.img,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          )),
-    );
+                ],
+              ),
+            )),
+      );
+    }
   }
 }
 
@@ -309,16 +314,16 @@ Widget print_nutris(List<List<String>> nutri) {
 customizelist(List<String> nutri) {
   nutri.removeLast();
   List<String> temp = [];
-  List<List<String>> final_nutri = [];
+  List<List<String>> finalNutri = [];
   for (int i = 0; i < nutri.length; i++) {
     if (nutri[i] != '') {
       temp.add(nutri[i].trim());
       if (temp != []) {}
-      final_nutri.add(temp);
+      finalNutri.add(temp);
     }
     temp = [];
   }
-  return final_nutri;
+  return finalNutri;
 }
 
 Widget makeWidget(String name, String value) {
@@ -366,10 +371,10 @@ Widget makeWidget(String name, String value) {
   );
 }
 
-Future<String> extractData(String _food) async {
+Future<String> extractData(String food) async {
 //Getting the response from the targeted url
   final response = await http.Client().get(Uri.parse(
-      'https://www.nutritionvalue.org/search.php?food_query=' + _food));
+      'https://www.nutritionvalue.org/search.php?food_query=' + food));
   //Status Code 200 means response has been received successfully
   if (response.statusCode == 200) {
     //Getting the html document from the response
@@ -395,38 +400,38 @@ Future<String> extractData(String _food) async {
   }
 }
 
-Future<List<String?>> getgraph(String _url) async {
+Future<List<String?>> getgraph(String url) async {
   //Getting the response from the targeted url
-  final response_final = await http.Client()
-      .get(Uri.parse('https://www.nutritionvalue.org' + _url));
+  final responseFinal = await http.Client()
+      .get(Uri.parse('https://www.nutritionvalue.org' + url));
 
-  if (response_final.statusCode == 200) {
-    var document_final = parser.parse(response_final.body);
+  if (responseFinal.statusCode == 200) {
+    var documentFinal = parser.parse(responseFinal.body);
     try {
-      var responseString_final = document_final
+      var responseStringFinal = documentFinal
           .getElementsByTagName('img')
           .where((e) => e.attributes.containsKey('src'))
           .map((e) => e.attributes['src'])
           .toList();
-      return responseString_final;
+      return responseStringFinal;
     } catch (e) {
       return ['err'];
     }
   } else {
-    return ['${response_final.statusCode}'];
+    return ['${responseFinal.statusCode}'];
   }
 }
 
-Future<List<String>> extractNutrient(String _url) async {
+Future<List<String>> extractNutrient(String url) async {
 //Getting the response from the targeted url
-  final response_final = await http.Client()
-      .get(Uri.parse('https://www.nutritionvalue.org' + _url));
+  final responseFinal = await http.Client()
+      .get(Uri.parse('https://www.nutritionvalue.org' + url));
 
-  if (response_final.statusCode == 200) {
-    var document_final = parser.parse(response_final.body);
+  if (responseFinal.statusCode == 200) {
+    var documentFinal = parser.parse(responseFinal.body);
     try {
       //NUTRIENTS PAGE
-      var responseString_final = document_final
+      var responseStringFinal = documentFinal
           .getElementById('nutrition-label')!
           .children[0]
           .children[0]
@@ -437,11 +442,11 @@ Future<List<String>> extractNutrient(String _url) async {
           .map((e) => e.text.trim())
           .toList();
 
-      return responseString_final;
+      return responseStringFinal;
     } catch (e) {
       return ['err'];
     }
   } else {
-    return ['${response_final.statusCode}'];
+    return ['${responseFinal.statusCode}'];
   }
 }
